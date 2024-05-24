@@ -21,6 +21,32 @@ if [ ! -d "$CWD/js" -o ! -d "$CWD/css" -o ! -d "$CWD/img" ]; then
 fi
 
 #
+# Generate HTML
+#
+
+cat "$CWD/index.html.head" > "$CWD/index.html"
+[ -f "$CWD/gallery/HEAD.html" ] && cat "$CWD/gallery/HEAD.html" >> "$CWD/index.html"
+
+(
+cd "$CWD/gallery"
+ls -r | while read g; do
+    if [ -d "$CWD/gallery/$g" ]; then
+        echo '<h2>'"${g#* }"'</h2>' >> "$CWD/index.html"
+        [ -f "$CWD/gallery/$g/HEAD.html" ] && cat "$CWD/gallery/$g/HEAD.html" >> "$CWD/index.html"
+        echo '<div class="gallery">' >> "$CWD/index.html"
+        for i in "$g"/*.jpg; do
+            echo '<a href="'"gallery/$i"'"><img src="thumbs/'"$i"'"></a>' >> "$CWD/index.html"
+        done
+        [ -f "$CWD/gallery/$g/TAIL.html" ] && cat "$CWD/gallery/$g/TAIL.html" >> "$CWD/index.html"
+        echo '</div>' >> "$CWD/index.html"
+    fi
+done
+)
+
+[ -f "$CWD/gallery/TAIL.html" ] && cat "$CWD/gallery/TAIL.html" >> "$CWD/index.html"
+cat "$CWD/index.html.tail" >> "$CWD/index.html"
+
+#
 # Generate Thumbnails
 #
 
@@ -38,29 +64,3 @@ for g in *; do
     fi
 done
 )
-
-#
-# Generate HTML
-#
-
-cat "$CWD/index.html.head" > "$CWD/index.html"
-[ -f "$CWD/gallery/HEAD.html" ] && cat "$CWD/gallery/HEAD.html" >> "$CWD/index.html"
-
-(
-cd "$CWD/gallery"
-for g in *; do
-    if [ -d "$CWD/gallery/$g" ]; then
-        echo '<h2>'"$g"'</h2>' >> "$CWD/index.html"
-        [ -f "$CWD/gallery/$g/HEAD.html" ] && cat "$CWD/gallery/$g/HEAD.html" >> "$CWD/index.html"
-        echo '<div class="gallery">' >> "$CWD/index.html"
-        for i in "$g"/*.jpg; do
-            echo '<a href="'"gallery/$i"'"><img src="thumbs/'"$i"'"></a>' >> "$CWD/index.html"
-        done
-        [ -f "$CWD/gallery/$g/TAIL.html" ] && cat "$CWD/gallery/$g/TAIL.html" >> "$CWD/index.html"
-        echo '</div>' >> "$CWD/index.html"
-    fi
-done
-)
-
-[ -f "$CWD/gallery/TAIL.html" ] && cat "$CWD/gallery/TAIL.html" >> "$CWD/index.html"
-cat "$CWD/index.html.tail" >> "$CWD/index.html"
