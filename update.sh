@@ -12,10 +12,13 @@ CWD="$(dirname "$(readlink -f "$0")")"
 # Update BlueImp Gallery
 #
 
-git clone https://github.com/blueimp/Gallery.git /tmp/gallery
-rm -f "$CWD/js/*" && cp -r /tmp/gallery/js/* "$CWD/js/"
-rm -f "$CWD/css/*" && cp -r /tmp/gallery/css/* "$CWD/css/"
-rm -f "$CWD/img/*" && cp -r /tmp/gallery/img/* "$CWD/img/"
+if [ ! -d "$CWD/js" -o ! -d "$CWD/css" -o ! -d "$CWD/img" ]; then
+    git clone https://github.com/blueimp/Gallery.git /tmp/gallery
+    [ ! -d "$CWD/js" ] && mkdir "$CWD/js" && cp -r /tmp/gallery/js/* "$CWD/js/"
+    [ ! -d "$CWD/css" ] && mkdir "$CWD/css" && cp -r /tmp/gallery/css/* "$CWD/css/"
+    [ ! -d "$CWD/img" ] && mkdir "$CWD/img" && cp -r /tmp/gallery/img/* "$CWD/img/"
+    rm -rf /tmp/gallery
+fi
 
 #
 # Generate Thumbnails
