@@ -35,7 +35,7 @@ ls -r | while read g; do
         [ -f "$CWD/gallery/$g/HEAD.html" ] && cat "$CWD/gallery/$g/HEAD.html" >> "$CWD/index.html"
         echo '<div class="gallery">' >> "$CWD/index.html"
         for i in "$g"/*.jpg; do
-            IMG="data:image/jpeg;base64,$(convert -define jpeg:size=200x200 "$CWD/gallery/$i" -thumbnail 100x100^ -gravity center -extent 100x100 JPEG:- |base64 -w0)"
+            THUMB="data:image/jpeg;base64,$(convert -define jpeg:size=200x200 "$CWD/gallery/$i" -thumbnail 100x100^ -gravity center -extent 100x100 JPEG:- |base64 -w0)"
             echo '<a href="gallery/'"$i"'"><img src="'"$THUMB"'"></a>' >> "$CWD/index.html"
         done
         [ -f "$CWD/gallery/$g/TAIL.html" ] && cat "$CWD/gallery/$g/TAIL.html" >> "$CWD/index.html"
