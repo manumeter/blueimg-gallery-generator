@@ -21,7 +21,7 @@ if [ ! -d "$CWD/js" -o ! -d "$CWD/css" -o ! -d "$CWD/img" ]; then
 fi
 
 #
-# Generate HTML
+# Generate HTML (with Thumbnails)
 #
 
 cat "$CWD/index.html.head" > "$CWD/index.html"
@@ -35,7 +35,8 @@ ls -r | while read g; do
         [ -f "$CWD/gallery/$g/HEAD.html" ] && cat "$CWD/gallery/$g/HEAD.html" >> "$CWD/index.html"
         echo '<div class="gallery">' >> "$CWD/index.html"
         for i in "$g"/*.jpg; do
-            echo '<a href="'"gallery/$i"'"><img src="thumbs/'"$i"'"></a>' >> "$CWD/index.html"
+            IMG="data:image/jpeg;base64,$(convert -define jpeg:size=200x200 "$CWD/gallery/$i" -thumbnail 100x100^ -gravity center -extent 100x100 JPEG:- |base64 -w0)"
+            echo '<a href="gallery/'"$i"'"><img src="'"$THUMB"'"></a>' >> "$CWD/index.html"
         done
         [ -f "$CWD/gallery/$g/TAIL.html" ] && cat "$CWD/gallery/$g/TAIL.html" >> "$CWD/index.html"
         echo '</div>' >> "$CWD/index.html"
@@ -45,22 +46,3 @@ done
 
 [ -f "$CWD/gallery/TAIL.html" ] && cat "$CWD/gallery/TAIL.html" >> "$CWD/index.html"
 cat "$CWD/index.html.tail" >> "$CWD/index.html"
-
-#
-# Generate Thumbnails
-#
-
-rm -rf "$CWD/thumbs"
-mkdir "$CWD/thumbs"
-
-(
-cd "$CWD/gallery"
-for g in *; do
-    if [ -d "$CWD/gallery/$g" ]; then
-        mkdir "$CWD/thumbs/$g"
-        for i in "$g"/*.jpg; do
-            convert -define jpeg:size=200x200 "$CWD/gallery/$i" -thumbnail 100x100^ -gravity center -extent 100x100 "$CWD/thumbs/$i"
-        done
-    fi
-done
-)
